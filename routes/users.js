@@ -24,7 +24,7 @@ router.post("/signup", (req, res, next) => {
           password: hash,
           image: `/users/${image.name}`
         });
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
           expiresIn: process.env.JWT_EXPIRES_IN
         });
         res.json({ status: "Signup success!", token: token });
@@ -49,7 +49,7 @@ router.post("/login", (req, res, next) => {
               err.status = 401;
               return next(err);
             }
-            let token = jwt.sign({ _id: user._id }, process.env.SECRET);
+            let token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
             res.json({ status: "Login success!", token: token });
           })
           .catch(next);
@@ -61,8 +61,7 @@ router.post("/login", (req, res, next) => {
 router.get("/me", auth.verifyUser, (req, res, next) => {
   res.json({
     _id: req.user._id,
-    firstName: req.user.firstName,
-    lastName: req.user.lastName,
+    name: req.user.name,
     username: req.user.username,
     image: req.user.image
   });
@@ -73,8 +72,7 @@ router.put("/me", auth.verifyUser, (req, res, next) => {
     .then(user => {
       res.json({
         _id: user._id,
-        firstName: req.user.firstName,
-        lastName: req.user.lastName,
+        name: req.body.name,
         username: user.username,
         image: user.image
       });
