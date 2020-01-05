@@ -4,6 +4,7 @@ const fileUpload = require("express-fileupload");
 const userRouter = require("./routes/users");
 const dotenv = require("dotenv").config();
 const auth = require("./auth");
+const productRoute = require("./routes/product");
 
 const app = express();
 app.use(express.json());
@@ -27,6 +28,7 @@ mongoose
 
 app.use(fileUpload());
 app.use("/users", userRouter);
+app.use("/products", productRoute);
 app.use(auth.verifyUser);
 
 app.use((err, req, res, next) => {
