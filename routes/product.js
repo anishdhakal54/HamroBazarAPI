@@ -13,19 +13,27 @@ router.get("/", (req, res) => {
       return next(err);
     }
     // console.log(allprod);
-    res.json({ allprod });
+    res.json({
+      allprod
+    });
   });
 });
 
 router.post("/new", auth.verifyUser, (req, res) => {
   const { image } = req.files;
+
+  var CreatedBy = {
+    id: req.user._id,
+    username: req.user.username
+  };
   image.mv(
     path.resolve(__dirname, "..", "public/product", image.name),
     errors => {
       const user = Product.create({
         name: req.body.name,
         image: `/product/${image.name}`,
-        price: req.body.price
+        price: req.body.price,
+        CreatedBy: CreatedBy
       });
       res.json({ status: "Product added!" });
     }

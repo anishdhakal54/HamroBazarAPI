@@ -15,7 +15,11 @@ module.exports.verifyUser = (req, res, next) => {
     throw new Error("Token could not be verified!");
   }
   User.findById(data._id).then(user => {
+    // if (!user) {
+    //   return console.log("no user");
+    // }
     req.user = user;
+    // console.log(req.user);
     next();
   });
 };

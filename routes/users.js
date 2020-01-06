@@ -59,6 +59,7 @@ router.post("/login", (req, res, next) => {
 });
 
 router.get("/me", auth.verifyUser, (req, res, next) => {
+  console.log(req.user);
   res.json({
     _id: req.user._id,
     name: req.user.name,
