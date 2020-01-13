@@ -1,13 +1,17 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const fileUpload = require("express-fileupload");
+const morgan = require("morgan");
+const productRouter = require("./routes/product");
 const userRouter = require("./routes/users");
 const dotenv = require("dotenv").config();
+const uploadRouter = require("./routes/upload");
 const auth = require("./auth");
-const productRoute = require("./routes/product");
+const cors = require("cors");
 
 const app = express();
+app.use(morgan("tiny"));
 app.use(express.json());
+app.options("*", cors());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname + "/public"));
@@ -26,9 +30,9 @@ mongoose
     err => console.log(err)
   );
 
-app.use(fileUpload());
 app.use("/users", userRouter);
-app.use("/products", productRoute);
+app.use("/upload", uploadRouter);
+app.use("/products", productRouter);
 app.use(auth.verifyUser);
 
 app.use((err, req, res, next) => {

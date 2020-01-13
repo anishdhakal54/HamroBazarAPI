@@ -1,43 +1,52 @@
-const path = require("path");
-const express = require("express");
-const jwt = require("jsonwebtoken");
+const express = require('express');
+const Product = require('../models/product');
+
 const router = express.Router();
-const auth = require("../auth");
-const Product = require("../models/product");
 
-router.get("/", (req, res) => {
-  Product.find({}, (err, allprod) => {
-    if (err) {
-      let err = new Error("No produt found !");
-      err.status = 401;
-      return next(err);
-    }
-    // console.log(allprod);
-    res.json({
-      allprod
-    });
-  });
-});
+router.route('/')
+    .get((req, res, next) => {
+        Product.find({})
+            .then((products) => {
+                res.json(products);
+            })
+            .catch(next);
+    })
+    .post((req, res, next) => {
+        Product.create(req.body)
+            .then((Product) => {
+                res.statusCode = 201;
+                res.json(Product);
+            })
+            .catch(next);
+    })
+    .put((req, res) => {
+        res.statusCode = 405;
+        res.json({ message: "Method not allowed" });
+    })
+    
 
-router.post("/new", auth.verifyUser, (req, res) => {
-  const { image } = req.files;
+// router.route('/:id')
+//     .get((req, res, next) => {
+//         Product.findById(req.params.id)
+//             .populate({
+//                 path: 'tasks',
+//                 select: 'name'
+//             })
+//             .then((Product) => {
+//                 res.json(Product);
+//             }).catch(next);
+//     })
+//     .post()
+//     .put()
+//     .delete();
 
-  var CreatedBy = {
-    id: req.user._id,
-    username: req.user.username
-  };
-  image.mv(
-    path.resolve(__dirname, "..", "public/product", image.name),
-    errors => {
-      const user = Product.create({
-        name: req.body.name,
-        image: `/product/${image.name}`,
-        price: req.body.price,
-        CreatedBy: CreatedBy
-      });
-      res.json({ status: "Product added!" });
-    }
-  );
-});
+    router.route('/trending')
+    .get((req, res, next) => {
+        Product.find({popular:true})
+            .then((products) => {
+                res.json(products);
+            })
+            .catch(next);
+    })
 
 module.exports = router;
